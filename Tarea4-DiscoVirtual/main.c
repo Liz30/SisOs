@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "Disco.h"
 
 #define NameSize 10
@@ -37,7 +38,8 @@ int main(){
 }
 
 void CreateDiscMenu(){
-    char fname[NameSize] = "disc1";
+    char fname[NameSize];
+    strcpy(fname, "disc1");
     int dsize, bsize;
     //printf("\n   Nombre del Disco (Max. 10 caracteres) > " );
     //scanf("%10s", &fname );
@@ -50,18 +52,11 @@ void CreateDiscMenu(){
     if (ferror != 0)
         printMsg(" El disco ya existe o no se completo su formato.");
     else
-        printMsg(" El Disco fue creado. ");
+        printMsg(" El Disco fue creado.");
 }
 
 void MountDiscMenu(){
-
-  /*   fp=fopen("archivo.txt","r");
-     if(fp==NULL)
-     {
-          printf("Error al abrir el archivo para leer");
-          exit(1);
-     }
-     fclose(fp);*/
+  MountDisc();
 }
 
 void FormatDiscMenu(){

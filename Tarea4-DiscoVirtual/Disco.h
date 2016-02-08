@@ -4,30 +4,34 @@
 
 extern NameSize;
 typedef struct Disco Disco;
+//typedef struct Bloque Bloque;
+typedef struct FatTable FatTable;
 
-struct Bloque{
+/*struct Bloque{
     // apuntadores
-    int *ptrs;
+    Bloque* Next; // Siguiente Bloque de data.
     char type; // Archivo, Directorio
-};
+};*/
 
 struct FatTable{
+    //Bloque* nTable; // Nueva Tabla Fat.
     int nBlocks;  // Cantidad de Bloques.
-    int Table[];   // Tabla Fat.
-    //int* firstFree; // Apunta al primer bloque libre. IMPLEMENTAR
+    int* Table;   // Tabla Fat.
 };
 
 struct Header{
+    char Name[10];
     unsigned long DiscSize;   // tamaño del disco (bytes).
     int BlockSize;  // Tamaño del bloque (bytes).
     char Flag;      // Indicador si esta montado (M) o no (U).
-    int MagicNumber; // Indicador si esta formateado (-1) o no (0).
-    struct FatTable ftable; // Fat Table.
+    int MagicNumber; // Indicador si esta formateado (1) o no (0).
+    int FirstFree; // Primer bloque libre.
+    FatTable ftable; // Fat Table.
 };
 
 struct Disco {
     struct Header header;
-    char* Name;
+    //Bloque DataSpace[];
 };
 
 void CreateFat(int size); // Done
