@@ -18,6 +18,7 @@ void printMsg(char* e){
 
 void getInfo(){
   printf("\n\nNombre del Disco: %s\n", nDisco.Name);
+  printf("flag\n" ); getch();
   printf("Tamaño de Disco: %d MB\n", nDisco.header.DiscSize);
   printf("Tamaño de Bloque: %d KB\n", nDisco.header.BlockSize);
   printf("Flag: %c\n", nDisco.header.Flag);
@@ -52,17 +53,22 @@ int DeleteDisc(char * path){
 
 int FormatDisc(char *path){
   f = fopen(path, "r+");
-  if (f == NULL){
+  if (f == NULL){ // Validar que existe
       printMsg(strcat(path, " no existe. "));
       fclose(f);
       return -1;
   }
+
   fclose(f);
 
+
   // Calculos
+  // Validar que esta umount
+  //
   unsigned long discbytes;
   int blockbytes, fatSize_bytes;
   float references;
+  nDisco.Name = path;
   blockbytes = (nDisco.header.BlockSize * cant_bytes);
   discbytes = nDisco.header.DiscSize * (unsigned long) cant_bytes * (unsigned long) cant_bytes;
   nDisco.header.ftable.nBlocks = discbytes / blockbytes;
@@ -79,7 +85,6 @@ int FormatDisc(char *path){
 
 void CreateFat(int size){
   int i = 0;
-  int t[nDisco.header.ftable.nBlocks];
   int reserved_bytes = sizeof(nDisco.header.Flag) +
                           sizeof(nDisco.header.MagicNumber) +
                           sizeof(nDisco.header.DiscSize) +
@@ -99,9 +104,8 @@ void CreateFat(int size){
 
   for (i; i < nDisco.header.ftable.nBlocks-1; i=i+1 )
       WriteBlock(i, i+1);
-  WriteBlock(i, 0); // Indicar el ultimo
 
-  getTable();
+  WriteBlock(i, 0); // Indicar el ultimo
 
   printf("\n\nreserved_bytes: %d\n reserved_blocks: %d\n", reserved_bytes, reserved_blocks_int);
   system ("pause");
@@ -111,9 +115,45 @@ void WriteBlock(int pos, int value){
     nDisco.header.ftable.Table[pos] = value;
 }
 
+int ReadBlock(int pos){
+    if (pos < nDisco.header.ftable.nBlocks) // Existe
+        return nDisco.header.ftable.Table[pos];
+    else
+        return -1;
+}
+
 void getTable(){
     int i;
     for (i = 0; i < nDisco.header.ftable.nBlocks; i = i + 1){
         printf("Tabla[%d]: %d\n", i, nDisco.header.ftable.Table[i] );
     }
+}
+
+int getNextFree(){
+  int i = 0;
+  while( (nDisco.header.ftable.Table[i] < 0) && // -1 sistema; -2 Alocado;
+         (i < nDisco.header.ftable.nBlocks) ) {
+      i = i + 1;
+  }
+
+  if (i == nDisco.header.ftable.nBlocks)
+      return -1;
+  return i;
+}
+
+void AllocateBlock(){
+  int p = getNextFree();
+  if (p != -1) { // Si no es del sistema.
+    WriteBlock(p, -2);
+    printf("Bloque [%d] se aloco.\n", p );
+  }
+  else
+    printMsg("Disco Lleno");
+}
+
+void AllocateBlocks(int n){
+  int i=0;
+  for (i; i<n; i+=1)
+    AllocateBlock();
+  getch();
 }

@@ -8,20 +8,24 @@ void CreateDiscMenu();
 void MountDiscMenu();
 void FormatDiscMenu();
 void EliminarDiscoMenu();
+void AllocateBlockMenu();
+void GetTableMenu();
 
 int main(){
 
   int op = 0;
-  while (op!=5){
+  while (op!=7){
     system("cls");
-    printf("\n  1. Crear Disco \n  2. Montar Disco \n  3. Formatear Disco\n  4. Eliminar Disco\n  5. Salir     > ");
+    printf("\n  1. Crear Disco \n  2. Montar Disco \n  3. Formatear Disco\n  4. Eliminar Disco\n  5. Alocar Bloque\n  6. Ver Tabla\n  7. Salir     > ");
     scanf("%d", &op);
     switch (op) {
         case 1: CreateDiscMenu(); op = 0; break ;
         case 2: MountDiscMenu(); op = 0 ; break;
         case 3: FormatDiscMenu(); op = 0 ; break;
         case 4: EliminarDiscoMenu(); op =0 ; break;
-        case 5: ;
+        case 5: AllocateBlockMenu(); op = 0; break;
+        case 6: GetTableMenu(); op = 0; break;
+        case 7: ;
     }
   }
   return 0;
@@ -39,7 +43,7 @@ void CreateDiscMenu(){
 
     int ferror = CreateDisc(fname, dsize, bsize);
     if (ferror != 0)
-        printMsg(" El disco ya existe o no se completo su format.");
+        printMsg(" El disco ya existe o no se completo su formato.");
     else
         printMsg(" El Disco fue creado. ");
 }
@@ -71,5 +75,18 @@ void EliminarDiscoMenu(){
   int form = DeleteDisc(fname);
   if (form != 0 ) //Error
     printMsg("Disco NO fue eliminado...");
-  printMsg("Disco fue eliminado exitosamente...");
+  else
+    printMsg("Disco fue eliminado exitosamente...");
+}
+
+void AllocateBlockMenu(){
+  int n;
+  printf("\n   Cantidad de Bloques > " );
+  scanf("%d", &n );
+  AllocateBlocks(n);
+}
+
+void GetTableMenu(){
+  getTable();
+  getch();
 }
