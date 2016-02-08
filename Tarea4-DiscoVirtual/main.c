@@ -7,25 +7,29 @@
 void CreateDiscMenu();
 void MountDiscMenu();
 void FormatDiscMenu();
-void EliminarDiscoMenu();
+void DeleteDiscMenu();
 void AllocateBlockMenu();
+void FreeBlockMenu();
 void GetTableMenu();
 
 int main(){
 
   int op = 0;
-  while (op!=7){
+  while (op!=8){
     system("cls");
-    printf("\n  1. Crear Disco \n  2. Montar Disco \n  3. Formatear Disco\n  4. Eliminar Disco\n  5. Alocar Bloque\n  6. Ver Tabla\n  7. Salir     > ");
+    printf("\n  1. Crear Disco \n  2. Montar Disco \n  3. Formatear Disco");
+    printf("\n  4. Eliminar Disco\n  5. Alocar Bloque\n  6. Liberar Bloque");
+    printf("\n  7. Ver Tabla\n  8. Salir     > ");
     scanf("%d", &op);
     switch (op) {
         case 1: CreateDiscMenu(); op = 0; break ;
         case 2: MountDiscMenu(); op = 0 ; break;
         case 3: FormatDiscMenu(); op = 0 ; break;
-        case 4: EliminarDiscoMenu(); op =0 ; break;
+        case 4: DeleteDiscMenu(); op =0 ; break;
         case 5: AllocateBlockMenu(); op = 0; break;
-        case 6: GetTableMenu(); op = 0; break;
-        case 7: ;
+        case 6: FreeBlockMenu(); op = 0; break;
+        case 7: GetTableMenu(); op = 0; break;
+        case 8: ;
     }
   }
   return 0;
@@ -68,7 +72,7 @@ void FormatDiscMenu(){
     printMsg("Formato Incompleto...");
 }
 
-void EliminarDiscoMenu(){
+void DeleteDiscMenu(){
   char fname[NameSize];
   printf("\n ELIMINAR -  Nombre del Disco (Max. 10 caracteres) > " );
   scanf("%10s", &fname );
@@ -84,6 +88,13 @@ void AllocateBlockMenu(){
   printf("\n   Cantidad de Bloques > " );
   scanf("%d", &n );
   AllocateBlocks(n);
+}
+
+void FreeBlockMenu(){
+  int n;
+  printf("\n   Posicion de Bloque > " );
+  scanf("%d", &n );
+  FreeBlock(n);
 }
 
 void GetTableMenu(){

@@ -13,6 +13,7 @@ struct Bloque{
 struct FatTable{
     int nBlocks;  // Cantidad de Bloques.
     int Table[];   // Tabla Fat.
+    //int* firstFree; // Apunta al primer bloque libre. IMPLEMENTAR
 };
 
 struct Header{
@@ -41,7 +42,7 @@ void MountDisc();
 void UmountDisc();
 void AllocateBlock(); // Done
 void AllocateBlocks( int n); // Done
-void FreeBlock();
+void FreeBlock(int n);
 void getFreeSpace();
 void getUsedSpace();
 void getInfo(); // Done

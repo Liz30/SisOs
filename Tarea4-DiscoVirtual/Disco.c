@@ -13,12 +13,12 @@ extern NameSize;
 
 void printMsg(char* e){
     printf("%s   ", e);
-    system("pause");
+    //system("pause");
+    getch();
 }
 
 void getInfo(){
   printf("\n\nNombre del Disco: %s\n", nDisco.Name);
-  printf("flag\n" ); getch();
   printf("Tamaño de Disco: %d MB\n", nDisco.header.DiscSize);
   printf("Tamaño de Bloque: %d KB\n", nDisco.header.BlockSize);
   printf("Flag: %c\n", nDisco.header.Flag);
@@ -156,4 +156,19 @@ void AllocateBlocks(int n){
   for (i; i<n; i+=1)
     AllocateBlock();
   getch();
+}
+
+void FreeBlock(int n){
+  if (n >= nDisco.header.ftable.nBlocks)
+    printMsg("Bloque No Existe");
+  else
+    if (nDisco.header.ftable.Table[n] == -1)
+      printMsg("Bloque reservado a Header");
+    else
+      if (nDisco.header.ftable.Table[n] == -2){
+            WriteBlock(n, n);
+            printMsg("Bloque Liberado");
+      }
+      else
+        printMsg("Bloque No Alocado Actualmente");
 }
