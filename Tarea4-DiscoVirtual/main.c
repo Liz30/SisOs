@@ -15,6 +15,7 @@ void GetTableMenu();
 int main(){
 
   int op = 0;
+
   while (op!=8){
     system("cls");
     printf("\n  1. Crear Disco \n  2. Montar Disco \n  3. Formatear Disco");
