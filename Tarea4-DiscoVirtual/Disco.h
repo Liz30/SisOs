@@ -8,6 +8,7 @@ typedef struct Disco Disco;
 struct Bloque{
     // apuntadores
     int *ptrs;
+    char type; // Archivo, Directorio
 };
 
 struct FatTable{

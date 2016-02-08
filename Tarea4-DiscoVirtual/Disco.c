@@ -115,7 +115,7 @@ void WriteBlock(int pos, int value){
     nDisco.header.ftable.Table[pos] = value;
 }
 
-int ReadBlock(int pos){
+int ReadBlock(int pos){ // Tiene que devolver struc bloque
     if (pos < nDisco.header.ftable.nBlocks) // Existe
         return nDisco.header.ftable.Table[pos];
     else
