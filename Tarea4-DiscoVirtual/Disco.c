@@ -60,7 +60,7 @@ int DeleteDisc(char * path){
       strcpy(nDisco.header.Name, "");
       nDisco.header.DiscSize = 0;
       nDisco.header.BlockSize = 0;
-      nDisco.header.Flag = 'N';
+      nDisco.header.Flag = 'U';
       nDisco.header.MagicNumber = 0;
       nDisco.header.FirstFree = -1;
       nDisco.header.LastFree = -1;
@@ -69,28 +69,6 @@ int DeleteDisc(char * path){
       return 0;
   }
   return -1;
-}
-
-int CreateDisc(char* name, unsigned long dsize, int bsize){
-    f = fopen(name, "rb");
-    if (f == NULL){  // No existe
-      f = fopen(name, "wb"); // Crearlo vacio.
-      fclose(f);
-      strcpy(nDisco.header.Name, name);
-      nDisco.header.DiscSize = dsize;
-      nDisco.header.BlockSize = bsize;
-      nDisco.header.Flag = 'U';
-      nDisco.header.MagicNumber = 0;
-      nDisco.header.FirstFree = 0;
-      nDisco.header.LastFree = 0;
-      nDisco.header.FatInitPos = -1;
-      nDisco.header.FatBlock = -1;
-      if ( FormatDisc(name) == -1 ) // Produjo un error.
-          return -2;
-      return 0;
-    }
-    fclose(f);
-    return -1;  // El disco ya existe
 }
 
 void MountDisc(){
@@ -129,7 +107,37 @@ void UmountDisc(){
       // modo wb
       printMsg("Disco desmontado.");
       nDisco.header.Flag = 'U';
+      strcpy(nDisco.header.Name, "");
+      nDisco.header.DiscSize = 0;
+      nDisco.header.BlockSize = 0;
+      nDisco.header.MagicNumber = 0;
+      nDisco.header.FirstFree = -1;
+      nDisco.header.LastFree = -1;
+      nDisco.header.FatInitPos = -1;
+      nDisco.header.FatBlock = -1;
   }
+}
+
+int CreateDisc(char* name, unsigned long dsize, int bsize){
+    f = fopen(name, "rb");
+    if (f == NULL){  // No existe
+      f = fopen(name, "wb"); // Crearlo vacio.
+      fclose(f);
+      strcpy(nDisco.header.Name, name);
+      nDisco.header.DiscSize = dsize;
+      nDisco.header.BlockSize = bsize;
+      nDisco.header.Flag = 'U';
+      nDisco.header.MagicNumber = 0;
+      nDisco.header.FirstFree = 0;
+      nDisco.header.LastFree = 0;
+      nDisco.header.FatInitPos = -1;
+      nDisco.header.FatBlock = -1;
+      if ( FormatDisc(name) == -1 ) // Produjo un error.
+          return -2;
+      return 0;
+    }
+    fclose(f);
+    return -1;  // El disco ya existe
 }
 
 int FormatDisc(char *path){
@@ -151,11 +159,43 @@ int FormatDisc(char *path){
 
   references =(float) (ftable.nBlocks) / (float)(sizeof(ftable.Table));
   fatSize_blocks = ftable.nBlocks / references;
-
   CreateFat(fatSize_blocks * references);
-  // Escribir en el archivo.
 
-  //
+  printMsg("1..");
+  char* buffer = (char *) malloc (sizeof(char) * nDisco.header.BlockSize);
+  memset(buffer, 0, sizeof(char) * nDisco.header.BlockSize);
+  printMsg("2..");
+  // Escribir en el archivo.
+  // Bloque 0, Boot (Null)
+  printMsg("3..");
+  fwrite(buffer, sizeof(char), sizeof(char) * nDisco.header.BlockSize, f); // opcion 2: buffer, 1, sizeof(char) * nDisco.header.BlockSize, f
+  printMsg("4..");
+  fwrite(&nDisco.header, sizeof(struct Header), 1, f);
+  printMsg("5");
+
+  int bytes_restantes = nDisco.header.BlockSize - sizeof(nDisco.header);
+  free(buffer);
+  printMsg("5 ------");
+  char* buffer1 = (char *) malloc(sizeof(char) * bytes_restantes);
+  printMsg("------- 6");
+  printf("    %d \n", sizeof(char) * bytes_restantes );
+  memset(buffer1, 0, sizeof(char) * bytes_restantes);
+  printMsg("6...");
+
+  fwrite(buffer1, sizeof(char), sizeof(char) * bytes_restantes, f);
+  printMsg("7..");
+  free(buffer);
+
+  fwrite(ftable.Table, sizeof(ftable.Table), 1, f);
+  printMsg("8...");
+
+  // Escribir la Tabla
+  /*int i = nDisco.header.FatInitPos;
+  for (i; i < nDisco.header.FatBlock; i=i+1){ // Bloques de la Fat
+      int j = 0;
+      for (j; j < references; j = j+1)
+
+  }*/
 
   fclose(f);
   return 0;
