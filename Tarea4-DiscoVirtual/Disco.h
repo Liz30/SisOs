@@ -14,7 +14,6 @@ typedef struct FatTable FatTable;
 };*/
 
 struct FatTable{
-    //Bloque* nTable; // Nueva Tabla Fat.
     int nBlocks;  // Cantidad de Bloques.
     int* Table;   // Tabla Fat.
 };

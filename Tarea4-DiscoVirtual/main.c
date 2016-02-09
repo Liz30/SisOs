@@ -17,21 +17,22 @@ int main(){
 
   int op = 0;
 
-  while (op!=8){
+  while (op!=9){
     system("cls");
     printf("\n  1. Crear Disco \n  2. Montar Disco \n  3. Formatear Disco");
-    printf("\n  4. Eliminar Disco\n  5. Alocar Bloque\n  6. Liberar Bloque");
-    printf("\n  7. Ver Tabla\n  8. Salir     > ");
+    printf("\n  4. Eliminar Disco\n  5. Propiedades del Disco\n  6. Alocar Bloque\n  7. Liberar Bloque");
+    printf("\n  8. Ver Tabla\n  9. Salir     > ");
     scanf("%d", &op);
     switch (op) {
         case 1: CreateDiscMenu(); op = 0; break ;
         case 2: MountDiscMenu(); op = 0 ; break;
         case 3: FormatDiscMenu(); op = 0 ; break;
         case 4: DeleteDiscMenu(); op =0 ; break;
-        case 5: AllocateBlockMenu(); op = 0; break;
-        case 6: FreeBlockMenu(); op = 0; break;
-        case 7: GetTableMenu(); op = 0; break;
-        case 8: ;
+        case 5: getInfo(); op = 0; break;
+        case 6: AllocateBlockMenu(); op = 0; break;
+        case 7: FreeBlockMenu(); op = 0; break;
+        case 8: GetTableMenu(); op = 0; break;
+        case 9: ;
     }
   }
   return 0;

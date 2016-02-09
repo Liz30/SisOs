@@ -11,6 +11,11 @@ FILE *f;
 Disco nDisco;
 extern NameSize;
 
+unsigned long discbytes;
+int blockbytes, fatSize_bytes, reserved_bytes, reserved_blocks_int;
+float references;
+
+
 void printMsg(char* e){
     printf("%s   ", e);
     //system("pause");
@@ -18,33 +23,47 @@ void printMsg(char* e){
 }
 
 void getInfo(){
-  printf("\n\n Nombre del Disco: %s\n", nDisco.header.Name);
-  printf(" Tamaño de Disco: %d MB\n", nDisco.header.DiscSize);
-  printf(" Tamaño de Bloque: %d KB\n", nDisco.header.BlockSize);
-  //printf(" Flag: %c\n", nDisco.header.Flag);
-  printf(" Formato: %d\n", nDisco.header.MagicNumber);
-//  printf(" Primer Bloque Libre: %d\n", nDisco.header.FirstFree);
-  getch();
+  if (strlen(nDisco.header.Name) == 0)
+    printMsg("Disco no encontrado");
+  else{
+    printf("\n\n Nombre del Disco: %s\n", nDisco.header.Name);
+    printf(" Tamaño de Disco: %d MB\n", nDisco.header.DiscSize);
+    printf(" Tamaño de Bloque: %d KB\n", nDisco.header.BlockSize);
+    printf(" Flag Mount: %c\n", nDisco.header.Flag);
+    printf(" Formato: " );
+    if(nDisco.header.MagicNumber == 0)
+        printf("No\n");
+    else
+        printf("Si\n");
+  //  printf(" Primer Bloque Libre: %d\n", nDisco.header.FirstFree);
+
+    printf("\n\n  Disco      Bloques       FAT        Header     Bloques\n");
+    printf("                                                Reservados");
+    printf("\n %d      %d          %d        %d        %d\n", discbytes, nDisco.header.ftable.nBlocks, fatSize_bytes, reserved_bytes, reserved_blocks_int);
+
+    getch();
+  }
 }
 
 int DeleteDisc(char * path){
   int r = remove(path);
   if (r == 0)
     return 0;
+    // Inicializar variables
   return -1;
 }
 
 int CreateDisc(char* name, unsigned long dsize, int bsize){
-    strcpy(nDisco.header.Name, name);
-    nDisco.header.DiscSize = dsize;
-    nDisco.header.BlockSize = bsize;
-    nDisco.header.Flag = 'U';
-    nDisco.header.MagicNumber = 0;
-    nDisco.header.FirstFree = -1;
     f = fopen(name, "r");
     if (f == NULL){  // No existe
       f = fopen(name, "a+");
       fclose(f);
+      strcpy(nDisco.header.Name, name);
+      nDisco.header.DiscSize = dsize;
+      nDisco.header.BlockSize = bsize;
+      nDisco.header.Flag = 'U';
+      nDisco.header.MagicNumber = 0;
+      nDisco.header.FirstFree = -1;
       if ( FormatDisc(name) != 0 )
           return -1;
       return 0;
@@ -83,9 +102,6 @@ int FormatDisc(char *path){
       return -1;
   }
 
-  unsigned long discbytes;
-  int blockbytes, fatSize_bytes;
-  float references;
   strcpy(nDisco.header.Name, path);
   blockbytes = (nDisco.header.BlockSize * cant_bytes);
   discbytes = nDisco.header.DiscSize * (unsigned long) cant_bytes * (unsigned long) cant_bytes;
@@ -95,20 +111,14 @@ int FormatDisc(char *path){
 
   references =(float) (nDisco.header.ftable.nBlocks / (float) (blockbytes / 4));
   fatSize_bytes = references * blockbytes;
-  getInfo();
-  printf("\n\n  Disco      Bloques       FAT        Header     Bloques Res.");
-  printf("\n %d      %d          %d   ", discbytes, nDisco.header.ftable.nBlocks, fatSize_bytes);
-//  printf("\n\nblockbytes: %d\ndiscbytes: %d\nnBlocks: %d\nreferences: %f\nfatSize_bytes: %d", blockbytes, discbytes,nDisco.header.ftable.nBlocks, references, fatSize_bytes);
-
-  //CreateFat
   CreateFat(fatSize_bytes);
-
+  getInfo();
   return 0;
 }
 
 void CreateFat(int size){
   int i = 0;
-  int reserved_bytes = sizeof(nDisco.header.Name) +
+  reserved_bytes = sizeof(nDisco.header.Name) +
                        sizeof(nDisco.header.Flag) +
                        sizeof(nDisco.header.MagicNumber) +
                        sizeof(nDisco.header.DiscSize) +
@@ -116,7 +126,6 @@ void CreateFat(int size){
                        sizeof(nDisco.header.FirstFree) +
                        size;
 
-  int reserved_blocks_int;
   double reserved_blocks_double = (double) reserved_bytes / (double) (nDisco.header.BlockSize * cant_bytes);
   double intpart;
   double fractpart = modf(reserved_blocks_double, &intpart);
@@ -133,9 +142,6 @@ void CreateFat(int size){
   WriteBlock(i, 0); // Indicar el ultimo
   nDisco.header.MagicNumber = 1; // Indicar que ya esta formateado.
   nDisco.header.FirstFree = reserved_blocks_int; // Set el primer bloque libre.
-
-  printf("     %d        %d\n", reserved_bytes, reserved_blocks_int);
-  system ("pause");
 }
 
 void WriteBlock(int pos, int value){
@@ -150,6 +156,7 @@ int ReadBlock(int pos){ // Tiene que devolver lo leido del archivo
 }
 
 void getTable(){
+    // validar que haya disco montado
     int i;
     for (i = 0; i < nDisco.header.ftable.nBlocks; i = i + 1){
         printf("Tabla[%d]: %d\n", i, nDisco.header.ftable.Table[i] );
@@ -179,6 +186,7 @@ void AllocateBlock(){
 }
 
 void AllocateBlocks(int n){
+  // Validar que haya disco montado
   int i=0;
   for (i; i<n; i+=1)
     AllocateBlock();
@@ -186,6 +194,7 @@ void AllocateBlocks(int n){
 }
 
 void FreeBlock(int n){
+  // validar que haya disco montado
   if (n >= nDisco.header.ftable.nBlocks)
     printMsg("Bloque No Existe");
   else
