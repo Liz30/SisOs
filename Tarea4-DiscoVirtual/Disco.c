@@ -71,7 +71,7 @@ int DeleteDisc(char * path){
 int CreateDisc(char* name, unsigned long dsize, int bsize){
     f = fopen(name, "r");
     if (f == NULL){  // No existe
-      f = fopen(name, "a+");
+      f = fopen(name, "a+b");
       fclose(f);
       strcpy(nDisco.header.Name, name);
       nDisco.header.DiscSize = dsize;
@@ -92,23 +92,23 @@ void MountDisc(){
     printMsg("Disco actualmente montado.");
   else{
     if (strlen(nDisco.header.Name) == 0)
-      printMsg("No hay disco");
-    else
-  // Leer el arhivo
-  // si Flag == M
-      // Disco ya esta montado.
-  // sino
-      // Leer el header
-    {  nDisco.header.Flag = 'M';
-        printMsg("Disco montado.");
-      }
-    /*   fp=fopen("archivo.txt","r");
-       if(fp==NULL)
-       {
-            printf("Error al abrir el archivo para leer");
+        printMsg("No hay disco");
+    else{
+    // Leer el arhivo
+       f=fopen(nDisco.header.Name,"rb");
+       if(f==NULL){
+            printf("Error al leer el disco.");
             exit(1);
        }
-       fclose(fp);*/
+
+       // Leer bloque 1 (Metadata)
+       char *buffer;
+       fread(buffer, )
+
+       nDisco.header.Flag = 'M';
+       fclose(fp);
+       printMsg("Disco montado.");
+    }
   }
 }
 
