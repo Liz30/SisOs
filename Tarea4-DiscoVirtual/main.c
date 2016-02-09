@@ -34,7 +34,7 @@ int main(){
         case 7: AllocateBlockMenu(); break;
         case 8: FreeBlockMenu(); break;
         case 9: GetTableMenu(); break;
-        case 0: UmountDiscMenu(); break;
+        case 0: UmountDiscMenu(); system("cls"); break;
     }
   }
   return 0;
@@ -52,8 +52,10 @@ void CreateDiscMenu(){
     scanf("%d", &bsize );
 
     int ferror = CreateDisc(fname, dsize, bsize);
-    if (ferror != 0)
-        printMsg(" El disco ya existe o no se completo su formato.");
+    if (ferror == -1)
+        printMsg(" El disco ya existe.");
+    if (ferror == -2)
+        printMsg(" No se completo su formato.");
     else
         printMsg(" El Disco fue creado.");
 }

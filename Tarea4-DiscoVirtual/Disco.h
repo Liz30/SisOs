@@ -20,16 +20,19 @@ struct FatTable{
 
 struct Header{
     char Name[10];
-    unsigned long DiscSize;   // tamaño del disco (bytes).
+    int DiscSize;   // tamaño del disco (bytes).
     int BlockSize;  // Tamaño del bloque (bytes).
     char Flag;      // Indicador si esta montado (M) o no (U).
     int MagicNumber; // Indicador si esta formateado (1) o no (0).
     int FirstFree; // Primer bloque libre.
-    FatTable ftable; // Fat Table.
+    short FatInitPos; // Numero de bloque donde inicia la FAT
+    int FatBlock; // Numero de Bloque que alocan la FAT.
+    int LastFree; // Ultimo Bloque Libre.
 };
 
 struct Disco {
     struct Header header;
+    //FatTable ftable; // Fat Table.
     //Bloque DataSpace[];
 };
 
