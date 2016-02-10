@@ -14,6 +14,7 @@ void AllocateBlockMenu();
 void FreeBlockMenu();
 void GetTableMenu();
 int disc_error;
+char fname[NameSize];
 
 int main(){
 
@@ -23,7 +24,7 @@ int main(){
     system("cls");
     printf("\n  1. Crear Disco \n  2. Montar Disco \n  3. Formatear Disco");
     printf("\n  4. Eliminar Disco\n  5. Desmontar Disco\n  6. Propiedades del Disco\n  7. Alocar Bloque\n  8. Liberar Bloque");
-    printf("\n  9. Ver Tabla\n  0. Salir               > ");
+    printf("\n  9. Ver Tabla\n  0. Salir              %s > ", fname);
     scanf("%d", &op);
     switch (op) {
         case 1: CreateDiscMenu(); break ;
@@ -42,11 +43,10 @@ int main(){
 }
 
 void CreateDiscMenu(){
-    char fname[NameSize];
-    strcpy(fname, "disc1");
+    //strcpy(fname, "disc1");
     int dsize, bsize;
-    //printf("\n   Nombre del Disco (Max. 10 caracteres) > " );
-    //scanf("%10s", &fname );
+    printf("\n   Nombre del Disco (Max. 10 caracteres) > " );
+    scanf("%10s", &fname );
     printf("\n   Tamaño del Disco (MB) > " );
     scanf("%d", &dsize );
     printf("   Tamaño del Bloque (KB) > " );
@@ -59,14 +59,18 @@ void CreateDiscMenu(){
         printMsg(" No se completo su formato.");
     if (disc_error == 0)
         printMsg(" El Disco fue creado.");
+    strcpy(fname,"");
 }
 
 void MountDiscMenu(){
-  MountDisc();
+  if (strlen(fname) == 0){
+      printf("\n MOUNT - Nombre del Disco (Max. 10 caracteres) > " );
+      scanf("%10s", &fname );
+      MountDisc(fname);
+  }
 }
 
 void FormatDiscMenu(){
-  char fname[NameSize];
   printf("\n FORMAT - Nombre del Disco (Max. 10 caracteres) > " );
   scanf("%10s", &fname );
   int form = FormatDisc(fname);
@@ -94,6 +98,7 @@ void AllocateBlockMenu(){
 
 void UmountDiscMenu(){
   UmountDisc();
+  strcpy(fname,"");
 }
 
 void FreeBlockMenu(){

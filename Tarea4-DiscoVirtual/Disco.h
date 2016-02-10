@@ -45,7 +45,7 @@ int getNextFree(); // Devuelve el primer bloque libre. Done.
 int CreateDisc(char* name, unsigned long dsize, int bsize);  // Done
 int FormatDisc(char* path); // Done
 int DeleteDisc(char* path); // Done
-void MountDisc(); //
+void MountDisc(char* path); //
 void UmountDisc(); //
 void AllocateBlock(); // Done
 void AllocateBlocks( int n); // Done
@@ -54,6 +54,7 @@ void getInfo(); // Done
 int getFreeSpace();
 int getUsedSpace();
 int DiscMounted();  // 1 true; 0 false; Done
+//void InitVariables();
 
 void printMsg(char* e); // Done
 
