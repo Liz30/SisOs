@@ -3,3 +3,6 @@
 3. El archivo se lee solo cuando se monta el disco.
 
 La tarea no esta completa. 
+
+Repositorio:
+https://github.com/Liz30/SisOs/tree/FileLikeDisc
