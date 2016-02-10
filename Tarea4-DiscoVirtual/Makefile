@@ -13,4 +13,3 @@ clean:
 	rm main.o
 	rm main.exe
 	rm Disco.o
-	rm disc1

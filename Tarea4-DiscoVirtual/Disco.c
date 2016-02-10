@@ -7,6 +7,7 @@
 
 #define cant_bytes 1024
 #define nblocks_reserved 2 // (0) Boot; (1) Metadata
+#define size_block 4096 // Tamaño de bloque establecido para leer archivos.
 
 FILE *f;
 Disco nDisco;
@@ -26,8 +27,8 @@ void getInfo(){
     printMsg("Disco no encontrado");
   else{
     printf("\n\n Nombre del Disco: %s\n", nDisco.header.Name);
-    printf(" Tamaño de Disco: %d MB\n", nDisco.header.DiscSize);
-    printf(" Tamaño de Bloque: %d KB\n", nDisco.header.BlockSize);
+    printf(" Tamaño de Disco: %d Bytes\n", nDisco.header.DiscSize);
+    printf(" Tamaño de Bloque: %d Bytes\n", nDisco.header.BlockSize);
     printf(" Flag Mount: %c\n", nDisco.header.Flag);
     printf(" Formato: " );
     if(nDisco.header.MagicNumber == 0)
@@ -75,10 +76,11 @@ void MountDisc(){
   if (DiscMounted() == 1)
     printMsg("Disco actualmente montado.");
   else{
-    if (strlen(nDisco.header.Name) == 0)
-        printMsg("No hay disco");
-    else{
+    //if (strlen(nDisco.header.Name) == 0)
+    //    printMsg("No hay disco");
+    //else{
     // Leer el arhivo
+      strcpy(nDisco.header.Name, "disc1");
        f=fopen(nDisco.header.Name,"rb");
        if(f==NULL){
             printf("Error al leer el disco.");
@@ -86,16 +88,19 @@ void MountDisc(){
        }
 
        // Leer bloque 1 (Metadata)
-       char *buffer;
-       //fread(buffer, )
+       char *buffer = (char *) malloc (sizeof(char) * size_block);
+       int t;
+       t = fread(buffer, sizeof(char), size_block,f); // Bloque 0
+       t = fread(&nDisco.header, sizeof(struct Header), 1, f); // Metadata
        if (nDisco.header.MagicNumber == 1){
            nDisco.header.Flag = 'M';
            printMsg("Disco montado.");
        }
        else
           printMsg("Disco Sin Formato");
-       fclose(f);
-    }
+      free(buffer);
+      fclose(f);
+    //}
   }
 }
 
@@ -124,8 +129,8 @@ int CreateDisc(char* name, unsigned long dsize, int bsize){
       f = fopen(name, "wb"); // Crearlo vacio.
       fclose(f);
       strcpy(nDisco.header.Name, name);
-      nDisco.header.DiscSize = dsize;
-      nDisco.header.BlockSize = bsize;
+      nDisco.header.DiscSize = dsize * cant_bytes * cant_bytes;
+      nDisco.header.BlockSize = bsize * cant_bytes;
       nDisco.header.Flag = 'U';
       nDisco.header.MagicNumber = 0;
       nDisco.header.FirstFree = 0;
@@ -161,34 +166,26 @@ int FormatDisc(char *path){
   fatSize_blocks = ftable.nBlocks / references;
   CreateFat(fatSize_blocks * references);
 
-  printMsg("1..");
   char* buffer = (char *) malloc (sizeof(char) * nDisco.header.BlockSize);
   memset(buffer, 0, sizeof(char) * nDisco.header.BlockSize);
-  printMsg("2..");
+
   // Escribir en el archivo.
   // Bloque 0, Boot (Null)
-  printMsg("3..");
+  printMsg("Escribiendo bloques reservados en el disco...");
   fwrite(buffer, sizeof(char), sizeof(char) * nDisco.header.BlockSize, f); // opcion 2: buffer, 1, sizeof(char) * nDisco.header.BlockSize, f
-  printMsg("4..");
   fwrite(&nDisco.header, sizeof(struct Header), 1, f);
-  printMsg("5");
 
   int bytes_restantes = nDisco.header.BlockSize - sizeof(nDisco.header);
   free(buffer);
-  printMsg("5 ------");
   char* buffer1 = (char *) malloc(sizeof(char) * bytes_restantes);
-  printMsg("------- 6");
   printf("    %d \n", sizeof(char) * bytes_restantes );
   memset(buffer1, 0, sizeof(char) * bytes_restantes);
-  printMsg("6...");
 
   fwrite(buffer1, sizeof(char), sizeof(char) * bytes_restantes, f);
-  printMsg("7..");
   free(buffer);
 
   fwrite(ftable.Table, sizeof(ftable.Table), 1, f);
-  printMsg("8...");
-
+  printMsg("Escritura finalizada...");
   // Escribir la Tabla
   /*int i = nDisco.header.FatInitPos;
   for (i; i < nDisco.header.FatBlock; i=i+1){ // Bloques de la Fat
@@ -196,7 +193,6 @@ int FormatDisc(char *path){
       for (j; j < references; j = j+1)
 
   }*/
-
   fclose(f);
   return 0;
 }
@@ -282,6 +278,8 @@ int ReadBlock(int pos){ // Tiene que devolver lo leido del archivo
           printMsg("Finalizando lectura...");
           printf("Buffer1: %s\n", buff1 );
           printf("Buffer2: %d\n", buff2 );
+          free(buff1);
+          free(buff2);
           getch();
       }
       fclose(f);

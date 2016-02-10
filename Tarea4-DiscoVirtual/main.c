@@ -13,6 +13,7 @@ void UmountDiscMenu();
 void AllocateBlockMenu();
 void FreeBlockMenu();
 void GetTableMenu();
+int disc_error;
 
 int main(){
 
@@ -46,17 +47,17 @@ void CreateDiscMenu(){
     int dsize, bsize;
     //printf("\n   Nombre del Disco (Max. 10 caracteres) > " );
     //scanf("%10s", &fname );
-    printf("\n   Tamaño del Disco (Bytes) > " );
+    printf("\n   Tamaño del Disco (MB) > " );
     scanf("%d", &dsize );
-    printf("   Tamaño del Bloque (Bytes) > " );
+    printf("   Tamaño del Bloque (KB) > " );
     scanf("%d", &bsize );
 
-    int ferror = CreateDisc(fname, dsize, bsize);
-    if (ferror == -1)
+    disc_error = CreateDisc(fname, dsize, bsize);
+    if (disc_error == -1)
         printMsg(" El disco ya existe.");
-    if (ferror == -2)
+    if (disc_error == -2)
         printMsg(" No se completo su formato.");
-    else
+    if (disc_error == 0)
         printMsg(" El Disco fue creado.");
 }
 
