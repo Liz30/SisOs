@@ -36,16 +36,18 @@ struct Disco {
     //Bloque DataSpace[];
 };
 
-void CreateFat(int size); // Done
-int ReadBlock(int pos);
-void WriteBlock(int pos, int value);
+void CreateFat(int blocknumber); // Done
+void ReadBlock(int blocknumber, char* buffer);
+void WriteBlock(int blocknumber, char* buffer);
 void getTable(); // Carga a Memoria la tabla. Done
 int getNextFree(); // Devuelve el primer bloque libre. Done.
+void setFAT(); // Llenar la tabla desde el archivo.
 
-int CreateDisc(char* name, unsigned long dsize, int bsize);  // Done
+int CreateDisc(char* name, int dsize, int bsize);  // Done
+//void CreateDisc2(char* name, int dsize, int bsize);  // Done
 int FormatDisc(char* path); // Done
 int DeleteDisc(char* path); // Done
-void MountDisc(char* path); //
+int MountDisc(char* path, int size); // size de bloque
 void UmountDisc(); //
 void AllocateBlock(); // Done
 void AllocateBlocks( int n); // Done

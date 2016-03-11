@@ -66,7 +66,11 @@ void MountDiscMenu(){
   if (strlen(fname) == 0){
       printf("\n MOUNT - Nombre del Disco (Max. 10 caracteres) > " );
       scanf("%10s", &fname );
-      MountDisc(fname);
+      int bsize;
+      printf("   Tamaño del Bloque (KB) > " );
+      scanf("%d", &bsize );
+      if (MountDisc(fname, bsize) == -1)
+        strcpy(fname,"");
   }
 }
 

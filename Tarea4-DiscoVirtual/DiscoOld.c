@@ -254,11 +254,11 @@ int FormatDisc(char *path){
   char* buffer = (char *) malloc (sizeof(char) * nDisco.header.BlockSize);
   memset(buffer, 0, sizeof(char) * nDisco.header.BlockSize);
 
+  // Escribir en el archivo.
+  // Bloque 0, Boot (Null)
   printMsg("Escribiendo bloques reservados en el disco...");
-  //fwrite(buffer, sizeof(char), sizeof(char) * nDisco.header.BlockSize, f); // opcion 2: buffer, 1, sizeof(char) * nDisco.header.BlockSize, f
-  WriteBlock(0, buffer);
-  //fwrite(&nDisco.header, sizeof(struct Header), 1, f);
-  WriteBlock(1, (char*)&nDisco.header);
+  fwrite(buffer, sizeof(char), sizeof(char) * nDisco.header.BlockSize, f); // opcion 2: buffer, 1, sizeof(char) * nDisco.header.BlockSize, f
+  fwrite(&nDisco.header, sizeof(struct Header), 1, f);
 
   int bytes_restantes = nDisco.header.BlockSize - sizeof(nDisco.header);
   free(buffer);
@@ -266,12 +266,10 @@ int FormatDisc(char *path){
   printf("    %d \n", sizeof(char) * bytes_restantes );
   memset(buffer1, 0, sizeof(char) * bytes_restantes);
 
-  //fwrite(buffer1, sizeof(char), sizeof(char) * bytes_restantes, f);
-  //WriteBlock()
+  fwrite(buffer1, sizeof(char), sizeof(char) * bytes_restantes, f);
   free(buffer);
 
-  //fwrite(ftable.Table, sizeof(ftable.Table), 1, f);
-  WriteBlock(nDisco.header.FatInitPos, (char*)&ftable.Table);
+  fwrite(ftable.Table, sizeof(ftable.Table), 1, f);
   printMsg("Escritura finalizada...");
   fclose(f);
   return 0;
