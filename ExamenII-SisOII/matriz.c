@@ -8,7 +8,7 @@
 //#define nDominios 5
 //#define nObjetos 10000
 
-MatrizAcceso nMatriz;
+/*MatrizAcceso nMatriz;
 extern int nDominios; // Cantidad de dominios
 extern int nObjetos; // Cantidad de objetos
 Dominio* _primerDominio; // Arreglo para dominios
@@ -91,5 +91,5 @@ void ListarDominios(){
     }
 
     if (i == 0)
-        printMsg("Lista de Dominios vacia");*/
-}
+        printMsg("Lista de Dominios vacia");
+}*/
